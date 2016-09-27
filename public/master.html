@@ -1,0 +1,101 @@
+<!doctype html>
+<script>
+	window.addEventListener("load", function () {
+		"use strict";
+		
+		function close(e) {
+		  console.log('dnsajkndksaj');
+		  var xhr = new XMLHttpRequest();
+			xhr.open('post', 'close', true);
+			xhr.send();
+		}
+		
+    function init(e) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('post', 'init/' + this.id, true);
+			xhr.send();
+
+			// Mark the selected answer
+			var selected = document.querySelectorAll('.selected');
+			for (var i = 0; i < selected.length; i++) {
+				selected[i].classList.remove('selected');
+			}
+			this.classList.add('selected');
+		}
+    function buttons(N) {
+			var c = document.getElementById('container');
+			var b = document.createElement('button');
+			b.id = 'close';
+			b.innerHTML = 'close';
+			c.appendChild(b);
+			b.addEventListener('click', close);
+			for (var i = 0; i < N.length; i++) {
+				var b = document.createElement('button');
+				b.id = N[i];
+				b.innerHTML = 'init ' + N[i];
+				c.appendChild(b);
+				b.addEventListener('click', init);
+			}
+		}
+
+		function build() {
+			buttons([2, 3, 4, 5, 6]);
+			var socket = io();
+			socket.on('count', function (pl) {
+				var cntr = document.getElementById('counter');
+				cntr.innerHTML = pl.count + ' / ' + pl.oo;
+			});
+		}
+		build();
+	});
+</script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<style>
+
+	#container {
+		display: flex;
+		flex-direction: column;
+	}
+
+button {
+	flex-grow: 1;
+	width: 8em;
+	background-color: cornflowerblue;
+	border: 0;
+	color: white;
+	margin: 0.25em auto;
+	padding: 0.75em;
+	font-weight: bold;
+	font-size: 2em;
+}
+
+button:hover {
+	background-color: darkorange;
+}
+
+button[disabled] {
+	background-color: gray;
+	color: silver;
+}
+
+button.selected {
+	background-color: darkorange;
+}
+
+button[disabled].selected {
+	background-color: darkorange;
+	color: white;
+}
+
+#counter {
+	font-size: 2em;
+	margin: auto;
+	text-align: center;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>
+  ballot
+</title>
+<div id='counter'></div>
+<div id='container'></div>

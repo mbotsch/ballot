@@ -1,0 +1,32 @@
+<!doctype html>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+  google.charts.load('current', {packages: ['corechart', 'bar']});
+  google.charts.setOnLoadCallback(display);
+  function display() {
+    var xhr = new XMLHttpRequest();
+		xhr.open('get', 'result', true);
+		xhr.addEventListener('load', function() {
+			drawChart(JSON.parse(xhr.response));
+		});
+		xhr.send();
+  }
+  function drawChart(result) {
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'Answer');
+		data.addColumn('number', 'Votes');
+		console.log(result);
+		for (var i = 0; i < result.length; i++) {
+			data.addRow([String.fromCharCode(i + 65), result[i]]);
+<!--      console.log([String.fromCharCode(i + 65), result[i]]);-->
+<!--      data.addRow(['a', 5]);-->
+		}
+  var options = {'width':400, 'height':300, legend: { position: "none" }};
+  var chart = new google.charts.Bar(document.getElementById('chart_div'));
+      chart.draw(data, options);
+  }
+</script>
+<title>
+  ballot
+</title>
+<div id="chart_div" style="width:400; height:300"></div>
