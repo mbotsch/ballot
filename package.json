@@ -13,6 +13,7 @@
   "author": "Jan Philip Göpfert",
   "license": "AGPL-3.0",
   "dependencies": {
+    "basic-auth": "^1.0.4",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "socket.io": "^1.4.8"

@@ -1,6 +1,7 @@
 var express = require('express');
-var cookie_parser = require('cookie-parser')
+var cookie_parser = require('cookie-parser');
 var app = express();
+var auth = require('basic-auth');
 
 var init = false;
 var open = false;
@@ -80,7 +81,7 @@ app.post('/init/:num', function(req, res) {
 	init = true;
 	open = true;
 	ballot = {};
-	console.log('Initialized vote with ' + ballot_length + ' candidates.')
+	console.log('Ballot with ' + ballot_length + ' candidates initialized.')
 });
 
 app.get('/num', function(req, res) {
@@ -91,7 +92,6 @@ app.get('/result', function(req, res) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	var result = Array.apply(null, Array(ballot_length)).map(Number.prototype.valueOf, 0);
-	//  ballot.forEach(function(k, v, m){console.log(k + ' => ' + v)});
 	for (var k in ballot) {
 		result[ballot[k]]++;
 	}
@@ -99,11 +99,18 @@ app.get('/result', function(req, res) {
 });
 
 app.post('/close', function(req, res) {
+	var credentials = auth(req);
+	if (!credentials || credentials.name !== 'funny' || credentials.pass !== 'ducks') {
+		res.statusCode = 401
+		res.setHeader('WWW-Authenticate', 'Basic realm="example"')
+		res.end('Access denied')} else {
 	open = false;
 	for (var i = 0; i < sockets.length; i++) {
 		sockets[i].emit('ballot_end', {});
 	}
 	res.json(ballot);
+	console.log('Ballot closed.');
+	}
 });
 
 
@@ -111,7 +118,7 @@ var server = require("http").createServer(app);
 var io = require('socket.io')(server);
 io.on('connection', function(socket) {
 	sockets.push(socket);
-	console.log('sock')
+	console.log('sock');
 });
 
 server.listen(3000);
