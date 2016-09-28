@@ -11,6 +11,8 @@ var ballot_length = 0;
 var sockets = [];
 var tokens = 0;
 
+var master = {name: 'funny', pass: 'ducks'}
+
 function guid() {
 	function s4() {
 		return Math.floor((1 + Math.random()) * 0x10000)
@@ -60,16 +62,13 @@ app.post('/vote/:x', function(req, res) {
 					'oo': oo
 				});
 			}
-			res.send('vote cast');
+			res.status(204).send();
 		} else {
 			res.status(400).send('invalid');
 		}
 	} else {
 		res.status(400).send('closed');
 	}
-
-	console.log(token + ' votes for ' + x);
-	console.log(ballot.size);
 });
 
 app.post('/init/:num', function(req, res) {
@@ -100,7 +99,7 @@ app.get('/result', function(req, res) {
 
 app.post('/close', function(req, res) {
 	var credentials = auth(req);
-	if (!credentials || credentials.name !== 'funny' || credentials.pass !== 'ducks') {
+	if (!credentials || credentials.name !== master.name || credentials.pass !== master.pass) {
 		res.statusCode = 401
 		res.setHeader('WWW-Authenticate', 'Basic realm="example"')
 		res.end('Access denied')} else {
@@ -113,12 +112,10 @@ app.post('/close', function(req, res) {
 	}
 });
 
-
 var server = require("http").createServer(app);
 var io = require('socket.io')(server);
 io.on('connection', function(socket) {
 	sockets.push(socket);
-	console.log('sock');
 });
 
 server.listen(3000);

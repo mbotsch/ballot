@@ -8,6 +8,8 @@ Installation
 npm install
 ```
 
+Change the line `server.listen(3000);` to contain your preferred port and the line `var master = {name: 'funny', pass: 'ducks'}` to contain your preferred user and password.
+
 Running
 -------
 ```bash
