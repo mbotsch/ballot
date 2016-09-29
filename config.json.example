@@ -1,11 +1,9 @@
 {
-    "server": {
-        "port": 3000
-    },
-    "credentials": [
-        {
-            "username": "bar",
-            "password": "foo"
-        }
-    ]
+	"server": {
+		"port": 3000
+	},
+	"credentials": {
+		"username": "foo",
+		"password": "bar"
+	}
 }

@@ -3,6 +3,14 @@ var cookie_parser = require('cookie-parser');
 var app = express();
 var auth = require('basic-auth');
 
+var fs = require('fs');
+var configuration = {};
+try {
+	configuration = JSON.parse(fs.readFileSync('config.json'));
+} catch (err) {
+	console.log('Configuration file cannot be read.');
+}
+
 var init = false;
 var open = false;
 
@@ -99,9 +107,9 @@ app.get('/result', function(req, res) {
 
 app.post('/close', function(req, res) {
 	var credentials = auth(req);
-	if (!credentials || credentials.name !== master.name || credentials.pass !== master.pass) {
+	if (!credentials || credentials.name !== configuration.credentials.username || credentials.pass !== configuration.credentials.password) {
 		res.statusCode = 401
-		res.setHeader('WWW-Authenticate', 'Basic realm="example"')
+		res.setHeader('WWW-Authenticate', 'Basic realm="ballot"')
 		res.end('Access denied')} else {
 	open = false;
 	for (var i = 0; i < sockets.length; i++) {
@@ -118,4 +126,4 @@ io.on('connection', function(socket) {
 	sockets.push(socket);
 });
 
-server.listen(3000);
+server.listen(configuration.server.port);
