@@ -51,6 +51,11 @@ app.use(function(req, res, next) {
 
 app.use(express.static('public'));
 
+app.get('/url', function(req, res) {
+	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+	console.log(fullUrl);
+	res.send(fullUrl);
+});
 app.post('/vote/:x', function(req, res) {
 	var token = req.cookies["token"];
 	if (token === undefined) {
