@@ -37,8 +37,23 @@
 			socket.on('ballot_end', function () {
 				var buttons = document.querySelectorAll('#container button');
 				for (var i = 0; i < buttons.length; i++) {
-					buttons[i].setAttribute("disabled", "disabled");
+					buttons[i].setAttribute("disabled", "");
 				}
+			});
+			socket.on('ballot_open', function () {
+				var buttons = document.querySelectorAll('#container button');
+				for (var i = 0; i < buttons.length; i++) {
+					buttons[i].removeAttribute("disabled");
+				}
+			});
+			socket.on('ballot_init', function (data) {
+				var buttons = document.querySelectorAll('#container button');
+				var c = document.getElementById('container');
+				for (var i = 0; i < buttons.length; i++) {
+					c.removeChild(buttons[i]);
+				}
+				console.log(data);
+				window.location.reload(false); 
 			});
 		}
 		build();

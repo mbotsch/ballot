@@ -19,8 +19,6 @@ var ballot_length = 0;
 var sockets = [];
 var tokens = 0;
 
-var master = {name: 'funny', pass: 'ducks'}
-
 function guid() {
 	function s4() {
 		return Math.floor((1 + Math.random()) * 0x10000)
@@ -91,8 +89,7 @@ app.post('/vote/:x', function(req, res) {
 			var oo = sockets.length;
 			for (var i = 0; i < sockets.length; i++) {
 				sockets[i].emit('count', {
-					'count': c,
-					'oo': oo
+					'count': c
 				});
 			}
 			res.status(204).send();
@@ -114,6 +111,9 @@ app.post('/init/:num', function(req, res) {
 		init = true;
 		open = true;
 		ballot = {};
+		for (var i = 0; i < sockets.length; i++) {
+			sockets[i].emit('ballot_init', ballot_length);
+		}
 		console.log('Ballot with ' + ballot_length + ' candidates initialized.')
 	}
 });
@@ -142,8 +142,21 @@ app.post('/close', function(req, res) {
 	for (var i = 0; i < sockets.length; i++) {
 		sockets[i].emit('ballot_end', {});
 	}
-	res.json(ballot);
 	console.log('Ballot closed.');
+	}
+});
+
+app.post('/open', function(req, res) {
+	var credentials = auth(req);
+	if (!credentials || credentials.name !== configuration.credentials.username || credentials.pass !== configuration.credentials.password) {
+		res.statusCode = 401
+		res.setHeader('WWW-Authenticate', 'Basic realm="ballot"')
+		res.end('Access denied')} else {
+	open = false;
+	for (var i = 0; i < sockets.length; i++) {
+		sockets[i].emit('ballot_open', {});
+	}
+	console.log('Ballot (re)opened.');
 	}
 });
 
@@ -151,6 +164,10 @@ var server = require("http").createServer(app);
 var io = require('socket.io')(server);
 io.on('connection', function(socket) {
 	sockets.push(socket);
+	socket.on('disconnect', function() {
+		var i = sockets.indexOf(socket);
+		sockets.splice(i, 1);
+	});
 });
 
 server.listen(configuration.server.port);

@@ -4,9 +4,22 @@
 		"use strict";
 		
 		function close(e) {
-		  console.log('dnsajkndksaj');
-		  var xhr = new XMLHttpRequest();
+			var btn = document.getElementById('close');
+			btn.removeEventListener('click', close, false);
+			btn.addEventListener('click', open);
+			btn.innerHTML = 'open';
+			var xhr = new XMLHttpRequest();
 			xhr.open('post', 'close', true);
+			xhr.send();
+		}
+		
+		function open(e) {
+			var btn = document.getElementById('close');
+			btn.removeEventListener('click', open, false);
+			btn.addEventListener('click', close);
+			btn.innerHTML = 'close';
+			var xhr = new XMLHttpRequest();
+			xhr.open('post', 'open', true);
 			xhr.send();
 		}
 		
@@ -21,12 +34,17 @@
 				selected[i].classList.remove('selected');
 			}
 			this.classList.add('selected');
+			
+			// Enable toggle button.
+			var btn = document.getElementById('close');
+			btn.removeAttribute('disabled');
 		}
     function buttons(N) {
 			var c = document.getElementById('container');
 			var b = document.createElement('button');
 			b.id = 'close';
 			b.innerHTML = 'close';
+			b.setAttribute('disabled', '');
 			c.appendChild(b);
 			b.addEventListener('click', close);
 			for (var i = 0; i < N.length; i++) {
@@ -43,7 +61,7 @@
 			var socket = io();
 			socket.on('count', function (pl) {
 				var cntr = document.getElementById('counter');
-				cntr.innerHTML = pl.count + ' / ' + pl.oo;
+				cntr.innerHTML = pl.count;
 			});
 		}
 		build();
@@ -88,6 +106,7 @@ button[disabled].selected {
 }
 
 #counter {
+	height: 1.2em;
 	font-size: 2em;
 	margin: auto;
 	text-align: center;
