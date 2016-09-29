@@ -6,9 +6,10 @@ Installation
 ------------
 ```bash
 npm install
+cp config.json.example config.json
 ```
 
-Change the line `server.listen(3000);` to contain your preferred port and the line `var master = {name: 'funny', pass: 'ducks'}` to contain your preferred user and password.
+Change `config.json` to contain your preferred values.
 
 Running
 -------
