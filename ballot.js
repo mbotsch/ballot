@@ -35,6 +35,19 @@ function count() {
 	return Object.keys(ballot).length;
 }
 
+function authenticated(req, res) {
+	var credentials = auth(req);
+	if (!credentials || credentials.name !== configuration.credentials.username || credentials.pass !== configuration.credentials.password) {
+		res.statusCode = 401;
+		res.setHeader('WWW-Authenticate', 'Basic realm="ballot"');
+		res.end('Access denied');
+		console.log('Blocked unauthenticated request.');
+		return false;
+	} else {
+		return true;
+	}
+}
+
 // need cookieParser middleware before we can do anything with cookies
 app.use(cookie_parser());
 
@@ -51,11 +64,18 @@ app.use(function(req, res, next) {
 
 app.use(express.static('public'));
 
+app.get('/master', function(req, res) {
+	if (authenticated(req, res)) {
+		res.sendFile('master.html', {root: __dirname});
+	}
+});
+
 app.get('/url', function(req, res) {
 	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 	console.log(fullUrl);
 	res.send(fullUrl);
 });
+
 app.post('/vote/:x', function(req, res) {
 	var token = req.cookies["token"];
 	if (token === undefined) {
@@ -85,15 +105,17 @@ app.post('/vote/:x', function(req, res) {
 });
 
 app.post('/init/:num', function(req, res) {
-	ballot_length = parseInt(req.params.num);
-	if (isNaN(ballot_length) || Math.floor(ballot_length) !== ballot_length) {
-		res.status(400).send('Invalid request');
-		return;
+	if (authenticated(req, res)) {
+		ballot_length = parseInt(req.params.num);
+		if (isNaN(ballot_length) || Math.floor(ballot_length) !== ballot_length) {
+			res.status(400).send('Invalid request');
+			return;
+		}
+		init = true;
+		open = true;
+		ballot = {};
+		console.log('Ballot with ' + ballot_length + ' candidates initialized.')
 	}
-	init = true;
-	open = true;
-	ballot = {};
-	console.log('Ballot with ' + ballot_length + ' candidates initialized.')
 });
 
 app.get('/num', function(req, res) {
