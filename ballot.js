@@ -115,6 +115,7 @@ app.post('/init/:num', function(req, res) {
 			sockets[i].emit('ballot_init', ballot_length);
 		}
 		console.log('Ballot with ' + ballot_length + ' candidates initialized.')
+		res.status(204).send();
 	}
 });
 
@@ -133,30 +134,32 @@ app.get('/result', function(req, res) {
 });
 
 app.post('/close', function(req, res) {
-	var credentials = auth(req);
-	if (!credentials || credentials.name !== configuration.credentials.username || credentials.pass !== configuration.credentials.password) {
-		res.statusCode = 401
-		res.setHeader('WWW-Authenticate', 'Basic realm="ballot"')
-		res.end('Access denied')} else {
-	open = false;
-	for (var i = 0; i < sockets.length; i++) {
-		sockets[i].emit('ballot_end', {});
-	}
-	console.log('Ballot closed.');
+	if (authenticated(req, res)) {
+		if (init && open) {
+			open = false;
+			for (var i = 0; i < sockets.length; i++) {
+				sockets[i].emit('ballot_end', {});
+			}
+			console.log('Ballot closed.');
+			res.status(204).send();
+		} else {
+			res.status(400).send('Already closed or not initialized.');
+		}
 	}
 });
 
 app.post('/open', function(req, res) {
-	var credentials = auth(req);
-	if (!credentials || credentials.name !== configuration.credentials.username || credentials.pass !== configuration.credentials.password) {
-		res.statusCode = 401
-		res.setHeader('WWW-Authenticate', 'Basic realm="ballot"')
-		res.end('Access denied')} else {
-	open = false;
-	for (var i = 0; i < sockets.length; i++) {
-		sockets[i].emit('ballot_open', {});
-	}
-	console.log('Ballot (re)opened.');
+	if (authenticated(req, res)) {
+		if (init && !open) {
+			open = true;
+			for (var i = 0; i < sockets.length; i++) {
+				sockets[i].emit('ballot_open', {});
+			}
+			console.log('Ballot (re)opened.');
+			res.status(204).send();
+		} else {
+			res.status(400).send('Already open or not initialized.');
+		}
 	}
 });
 
