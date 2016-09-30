@@ -14,7 +14,7 @@
 			}
 			this.classList.add('selected');
 		}
-		function buttons(n) {
+		function createButtons(n) {
 			var c = document.getElementById('container');
 			for (var i = 0; i < n; i++) {
 				var b = document.createElement('button');
@@ -29,7 +29,7 @@
 			var xhr = new XMLHttpRequest();
 			xhr.open('get', 'num', true);
 			xhr.addEventListener('load', function() {
-				buttons(xhr.response);
+				createButtons(xhr.response);
 			});
 			xhr.send();
 
@@ -52,8 +52,7 @@
 				for (var i = 0; i < buttons.length; i++) {
 					c.removeChild(buttons[i]);
 				}
-				console.log(data);
-				window.location.reload(false); 
+				createButtons(data);
 			});
 		}
 		build();
