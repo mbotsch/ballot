@@ -4,7 +4,7 @@
 		"use strict";
 
 		function close(e) {
-			var btn = document.getElementById('close');
+			var btn = document.getElementById('toggle');
 			btn.removeEventListener('click', close, false);
 			btn.addEventListener('click', open);
 			btn.innerHTML = 'open';
@@ -14,7 +14,7 @@
 		}
 
 		function open(e) {
-			var btn = document.getElementById('close');
+			var btn = document.getElementById('toggle');
 			btn.removeEventListener('click', open, false);
 			btn.addEventListener('click', close);
 			btn.innerHTML = 'close';
@@ -36,14 +36,17 @@
 			this.classList.add('selected');
 
 			// Enable toggle button.
-			var btn = document.getElementById('close');
+			var btn = document.getElementById('toggle');
 			btn.removeAttribute('disabled');
+			btn.removeEventListener('click', open, false);
+			btn.addEventListener('click', close);
+			btn.innerHTML = 'close';
 		}
 
 		function buttons(N) {
 			var c = document.getElementById('container');
 			var b = document.createElement('button');
-			b.id = 'close';
+			b.id = 'toggle';
 			b.innerHTML = 'close';
 			b.setAttribute('disabled', '');
 			c.appendChild(b);
