@@ -64,7 +64,9 @@ app.use(express.static('public'));
 
 app.get('/master', function(req, res) {
 	if (authenticated(req, res)) {
-		res.sendFile('master.html', {root: __dirname});
+		res.sendFile('master.html', {
+			root: __dirname
+		});
 	}
 });
 

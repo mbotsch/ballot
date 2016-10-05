@@ -1,7 +1,8 @@
 <!doctype html>
 <script>
-	window.addEventListener("load", function () {
+	window.addEventListener("load", function() {
 		"use strict";
+
 		function vote(e) {
 			var xhr = new XMLHttpRequest();
 			xhr.open('post', 'vote/' + this.id, true);
@@ -14,6 +15,7 @@
 			}
 			this.classList.add('selected');
 		}
+
 		function createButtons(n) {
 			var c = document.getElementById('container');
 			for (var i = 0; i < n; i++) {
@@ -25,6 +27,7 @@
 				b.addEventListener('click', vote);
 			}
 		}
+
 		function build() {
 			var xhr = new XMLHttpRequest();
 			xhr.open('get', 'num', true);
@@ -34,19 +37,19 @@
 			xhr.send();
 
 			var socket = io();
-			socket.on('ballot_end', function () {
+			socket.on('ballot_end', function() {
 				var buttons = document.querySelectorAll('#container button');
 				for (var i = 0; i < buttons.length; i++) {
 					buttons[i].setAttribute("disabled", "");
 				}
 			});
-			socket.on('ballot_open', function () {
+			socket.on('ballot_open', function() {
 				var buttons = document.querySelectorAll('#container button');
 				for (var i = 0; i < buttons.length; i++) {
 					buttons[i].removeAttribute("disabled");
 				}
 			});
-			socket.on('ballot_init', function (data) {
+			socket.on('ballot_init', function(data) {
 				var buttons = document.querySelectorAll('#container button');
 				var c = document.getElementById('container');
 				for (var i = 0; i < buttons.length; i++) {
@@ -60,44 +63,43 @@
 </script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <style>
-
 	#container {
 		display: flex;
 		flex-direction: column;
 	}
-
-button {
-	flex-grow: 1;
-	width: 8em;
-	background-color: cornflowerblue;
-	border: 0;
-	color: white;
-	margin: 0.25em auto;
-	padding: 0.75em;
-	font-weight: bold;
-	font-size: 2em;
-}
-
-button:hover {
-	background-color: darkorange;
-}
-
-button[disabled] {
-	background-color: gray;
-	color: silver;
-}
-
-button.selected {
-	background-color: darkorange;
-}
-
-button[disabled].selected {
-	background-color: darkorange;
-	color: white;
-}
+	
+	button {
+		flex-grow: 1;
+		width: 8em;
+		background-color: cornflowerblue;
+		border: 0;
+		color: white;
+		margin: 0.25em auto;
+		padding: 0.75em;
+		font-weight: bold;
+		font-size: 2em;
+	}
+	
+	button:hover {
+		background-color: darkorange;
+	}
+	
+	button[disabled] {
+		background-color: gray;
+		color: silver;
+	}
+	
+	button.selected {
+		background-color: darkorange;
+	}
+	
+	button[disabled].selected {
+		background-color: darkorange;
+		color: white;
+	}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>
-  ballot
+	ballot
 </title>
 <div id='container'></div>
