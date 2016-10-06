@@ -2,6 +2,7 @@ var express = require('express');
 var cookie_parser = require('cookie-parser');
 var app = express();
 var auth = require('basic-auth');
+var request = require('request');
 
 var fs = require('fs');
 var configuration = {};
@@ -71,9 +72,37 @@ app.get('/master', function(req, res) {
 });
 
 app.get('/url', function(req, res) {
-	var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-	console.log(fullUrl);
-	res.send(fullUrl);
+	var fullUrl = req.protocol + '://' + req.get('host');
+	if (configuration.google.key == "") {
+		var answer = {
+			longUrl: fullUrl
+		};
+		res.send(answer);
+	} else {
+		var data = {
+			uri: 'https://www.googleapis.com/urlshortener/v1/url?key=' + configuration.google.key,
+			body: {
+				longUrl: fullUrl
+			},
+			json: true
+		};
+		request.post(data, function(error, response, body) {
+			if (!error && response.statusCode == 200) {
+				var answer = {
+					shortUrl: body.id,
+					longUrl: body.longUrl
+				};
+				res.send(answer);
+			} else {
+				console.log(error);
+				console.log(response);
+				var answer = {
+					longUrl: fullUrl
+				};
+				res.send(answer);
+			}
+		})
+	}
 });
 
 app.post('/vote/:x', function(req, res) {
