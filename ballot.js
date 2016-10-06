@@ -77,36 +77,46 @@ app.get('/url', function(req, res) {
 });
 
 app.post('/vote/:x', function(req, res) {
+	// Fail if the vote comes without a token.
 	var token = req.cookies["token"];
 	if (token === undefined) {
 		res.status(400).send("A token is required to vote.");
 		return;
 	}
 
-	if (open) {
-		var x = req.params.x;
-		if (x >= 0 && x < ballot_length) {
-			ballot[token] = x;
-			var c = count();
-			var oo = sockets.length;
-			for (var i = 0; i < sockets.length; i++) {
-				sockets[i].emit('count', {
-					'count': c
-				});
-			}
-			res.status(204).send();
-		} else {
-			res.status(400).send('invalid');
-		}
-	} else {
-		res.status(400).send('closed');
+	// Fail if the vote is invalid.
+	var x = req.params.x;
+	if (isNaN(x) || Math.floor(x) != x || x < 0 || x >= ballot_length) {
+		res.status(400).send('Invalid vote.');
+		return;
 	}
+
+	// Fail if there is no open ballot.
+	if (!init || !open) {
+		res.status(400).send('No open ballot.');
+		return;
+	}
+
+	// If all is good, cast the vote.
+	ballot[token] = x;
+
+	// Notify sockets of (possibly changed) number of votes cast.
+	var c = count();
+	var oo = sockets.length;
+	for (var i = 0; i < sockets.length; i++) {
+		sockets[i].emit('count', {
+			'count': c
+		});
+	}
+
+	// All good.
+	res.status(204).send();
 });
 
 app.post('/init/:num', function(req, res) {
 	if (authenticated(req, res)) {
 		ballot_length = parseInt(req.params.num);
-		if (isNaN(ballot_length) || Math.floor(ballot_length) !== ballot_length) {
+		if (isNaN(ballot_length) || Math.floor(ballot_length) != ballot_length) {
 			res.status(400).send('Invalid request');
 			return;
 		}
