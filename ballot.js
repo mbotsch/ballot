@@ -204,6 +204,18 @@ app.post('/open', function(req, res) {
 	}
 });
 
+app.get('/status', function(req, res) {
+	if (init) {
+		if (open) {
+			res.json('open');
+		} else {
+			res.json('closed');
+		}
+	} else {
+		res.json('not_init');
+	}
+});
+
 var server = require("http").createServer(app);
 var io = require('socket.io')(server);
 io.on('connection', function(socket) {
