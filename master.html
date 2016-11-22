@@ -11,6 +11,16 @@
 			var xhr = new XMLHttpRequest();
 			xhr.open('post', 'close', true);
 			xhr.send();
+			
+			// Enable init buttons.
+			var buttons = document.querySelectorAll('#container button');
+			for (var i = 0; i < buttons.length; i++) {
+				buttons[i].classList.remove('selected');
+				if (buttons[i].id == 'toggle') {
+					continue;
+				}
+				buttons[i].removeAttribute("disabled");
+			}
 		}
 
 		function open(e) {
@@ -20,7 +30,15 @@
 			btn.innerHTML = 'close';
 			var xhr = new XMLHttpRequest();
 			xhr.open('post', 'open', true);
-			xhr.send();
+			
+			// Disable init buttons.
+			var buttons = document.querySelectorAll('#container button');
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id == 'toggle') {
+					continue;
+				}
+				buttons[i].setAttribute("disabled", "");
+			}
 		}
 
 		function init(e) {
@@ -41,9 +59,18 @@
 			btn.removeEventListener('click', open, false);
 			btn.addEventListener('click', close);
 			btn.innerHTML = 'close';
+			
+			// Disable init buttons.
+			var buttons = document.querySelectorAll('#container button');
+			for (var i = 0; i < buttons.length; i++) {
+				if (buttons[i].id == 'toggle') {
+					continue;
+				}
+				buttons[i].setAttribute("disabled", "");
+			}
 		}
 
-		function buttons(N) {
+		function createButtons(N) {
 			var c = document.getElementById('container');
 			var b = document.createElement('button');
 			b.id = 'toggle';
@@ -61,7 +88,7 @@
 		}
 
 		function build() {
-			buttons([2, 3, 4, 5, 6]);
+			createButtons([2, 3, 4, 5, 6]);
 			var socket = io();
 			socket.on('count', function(pl) {
 				var cntr = document.getElementById('counter');
