@@ -25,6 +25,20 @@
 				c.appendChild(b);
 				b.addEventListener('click', vote);
 			}
+			
+			// Disable buttons if ballot is not open.
+			var xhr = new XMLHttpRequest();
+			xhr.open('get', 'status', true);
+			xhr.addEventListener('load', function() {
+				status = JSON.parse(xhr.response);
+				if (status !== 'open') {
+					var buttons = document.querySelectorAll('#container button');
+					for (var i = 0; i < buttons.length; i++) {
+						buttons[i].setAttribute("disabled", "");
+					}
+				}
+			});
+			xhr.send();
 		}
 
 		function build() {
