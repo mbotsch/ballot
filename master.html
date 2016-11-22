@@ -30,6 +30,7 @@
 			btn.innerHTML = 'close';
 			var xhr = new XMLHttpRequest();
 			xhr.open('post', 'open', true);
+			xhr.send();
 			
 			// Disable init buttons.
 			var buttons = document.querySelectorAll('#container button');
