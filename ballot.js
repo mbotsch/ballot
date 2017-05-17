@@ -168,8 +168,16 @@ app.get('/result', function(req, res) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	var result = Array.apply(null, Array(ballot_length)).map(Number.prototype.valueOf, 0);
-	for (var k in ballot) {
-		result[ballot[k]]++;
+	var num_voters = 0;
+	for (var voter in ballot) {
+		vote = ballot[voter];
+		for (var k of vote) {
+			result[k]++;
+		}
+		num_voters++;
+	}
+	for (var i = 0; i < result.length; i++) {
+		result[i] = result[i] / num_voters * 100;
 	}
 	res.json(result);
 });
@@ -223,6 +231,9 @@ io.on('connection', function(socket) {
 	socket.on('disconnect', function() {
 		var i = sockets.indexOf(socket);
 		sockets.splice(i, 1);
+	});
+	socket.on('vote', function(vote) {
+		ballot[socket.id] = vote;
 	});
 });
 

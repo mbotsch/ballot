@@ -3,17 +3,31 @@
 	window.addEventListener("load", function() {
 		"use strict";
 
-		function vote(e) {
-			var xhr = new XMLHttpRequest();
-			xhr.open('post', 'vote/' + this.id, true);
-			xhr.send();
+		var socket = io();
 
-			// Mark the selected answer
+		function vote(e) {
+			// Mark the selected answer.
+			this.classList.toggle('selected');
+
+			// Collect selected answers.
+			var selected_ids = [];
 			var selected = document.querySelectorAll('.selected');
 			for (var i = 0; i < selected.length; i++) {
-				selected[i].classList.remove('selected');
+				selected_ids.push(selected[i].id)
 			}
-			this.classList.add('selected');
+
+			socket.emit('vote', selected_ids);
+
+<!--			var xhr = new XMLHttpRequest();-->
+<!--			xhr.open('post', 'vote/' + this.id, true);-->
+<!--			xhr.send();-->
+
+<!--			// Mark the selected answer-->
+<!--			var selected = document.querySelectorAll('.selected');-->
+<!--			for (var i = 0; i < selected.length; i++) {-->
+<!--				selected[i].classList.remove('selected');-->
+<!--			}-->
+<!--			this.classList.add('selected');-->
 		}
 
 		function createButtons(n) {
@@ -49,7 +63,6 @@
 			});
 			xhr.send();
 
-			var socket = io();
 			socket.on('ballot_end', function() {
 				var buttons = document.querySelectorAll('#container button');
 				for (var i = 0; i < buttons.length; i++) {
@@ -95,7 +108,7 @@
 	}
 	
 	button:hover {
-		background-color: #f59f00;
+		background-color: #009900;
 	}
 	
 	button[disabled] {
