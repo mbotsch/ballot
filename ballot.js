@@ -171,8 +171,8 @@ app.get('/result', function(req, res) {
 	var num_voters = 0;
 	for (var voter in ballot) {
 		vote = ballot[voter];
-		for (var k of vote) {
-			result[k]++;
+		for (var i = 0; i < vote.length; i++) {
+			result[vote[i]]++;
 		}
 		num_voters++;
 	}
