@@ -3,9 +3,10 @@
 	window.addEventListener("load", function() {
 		"use strict";
 
-		var socket = io();
+        var socket = io();
 
-		function vote(e) {
+		function vote(e)
+        {
 			// Mark the selected answer.
 			this.classList.toggle('selected');
 
@@ -17,20 +18,13 @@
 			}
 
 			socket.emit('vote', selected_ids);
-
-<!--			var xhr = new XMLHttpRequest();-->
-<!--			xhr.open('post', 'vote/' + this.id, true);-->
-<!--			xhr.send();-->
-
-<!--			// Mark the selected answer-->
-<!--			var selected = document.querySelectorAll('.selected');-->
-<!--			for (var i = 0; i < selected.length; i++) {-->
-<!--				selected[i].classList.remove('selected');-->
-<!--			}-->
-<!--			this.classList.add('selected');-->
 		}
 
-		function createButtons(n) {
+
+        // create n buttons
+		function createButtons(n)
+        {
+            // create buttons
 			var c = document.getElementById('container');
 			for (var i = 0; i < n; i++) {
 				var b = document.createElement('button');
@@ -39,42 +33,12 @@
 				c.appendChild(b);
 				b.addEventListener('click', vote);
 			}
-			
-			// Disable buttons if ballot is not open.
-			var xhr = new XMLHttpRequest();
-			xhr.open('get', 'status', true);
-			xhr.addEventListener('load', function() {
-				status = JSON.parse(xhr.response);
-				if (status !== 'open') {
-					var buttons = document.querySelectorAll('#container button');
-					for (var i = 0; i < buttons.length; i++) {
-						buttons[i].setAttribute("disabled", "");
-					}
-				}
-			});
-			xhr.send();
 		}
 
-		function build() {
-			var xhr = new XMLHttpRequest();
-			xhr.open('get', 'num', true);
-			xhr.addEventListener('load', function() {
-				createButtons(xhr.response);
-			});
-			xhr.send();
 
-			socket.on('ballot_end', function() {
-				var buttons = document.querySelectorAll('#container button');
-				for (var i = 0; i < buttons.length; i++) {
-					buttons[i].setAttribute("disabled", "");
-				}
-			});
-			socket.on('ballot_open', function() {
-				var buttons = document.querySelectorAll('#container button');
-				for (var i = 0; i < buttons.length; i++) {
-					buttons[i].removeAttribute("disabled");
-				}
-			});
+		function build()
+        {
+            // create buttons on ballot_init
 			socket.on('ballot_init', function(data) {
 				var buttons = document.querySelectorAll('#container button');
 				var c = document.getElementById('container');
@@ -83,48 +47,70 @@
 				}
 				createButtons(data);
 			});
+
+            // disable buttons when ballot_end is received
+			socket.on('ballot_end', function() {
+				var buttons = document.querySelectorAll('#container button');
+				for (var i = 0; i < buttons.length; i++) {
+					buttons[i].setAttribute("disabled", "");
+				}
+			});
 		}
 		build();
 	});
 </script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <style>
+
+@import url(css/lato.css);
+
+    body {
+        text-align: center;
+    }
+
 	#container {
 		display: flex;
 		flex-direction: column;
 	}
-	
+
+    h1 {
+        font-family: "Lato", sans-serif;
+		font-weight: bold;
+		font-size: 3em;
+        margin: 10px auto;
+    }
+
 	button {
+        font-family: "Lato", sans-serif;
+		font-weight: bold;
+		font-size: 2em;
 		flex-grow: 1;
 		width: 8em;
-		background-color: firebrick;
-		border: 0;
+		background-color: #2a9ddf;
+		border: 3px solid #2a9ddf;
 		color: white;
 		margin: 0.25em auto;
 		padding: 0.75em;
-		font-weight: bold;
-		font-size: 2em;
 		border-radius: 0.1em;
 	}
-	
-	button:hover {
-		background-color: hotpink;
-	}
-	
-	button[disabled] {
-		background-color: lightcoral;
-	}
-	
+
 	button.selected {
-		background-color: limegreen;
+		background-color: #f59f00;
+		border: 3px solid #f59f00;
 	}
-	
+
+	button[disabled] {
+		background-color: lightgrey;
+	}
+
 	button[disabled].selected {
-		background-color: lightgreen;
+		background-color: lightgrey;
+		border: 3px solid #f59f00;
 	}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>
-	ballot
+	Quizzy
 </title>
+<h1>Quizzy</h1>
 <div id='container'></div>
